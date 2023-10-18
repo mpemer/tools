@@ -6,10 +6,15 @@ into searchable PDF files in datetree folder structure
 pdf_refile.sh
 
 ## Dependencies
-Tested on macOS - no guarantees that the script will work anywhere else.
-You would need to make sure to have the following installed on your system.
+Tested on macOS - while I have some rudimentary logic for also supporting GNU/Linux,
+the usage of the date command is non-portable. In other words, I make no guarantees
+that the script will work anywhere other than on macOS (for now). I may fix this in
+the future if I have time and need.
+You would need to have the following utilities installed on your system.
 
 bash pdftotext ocrmypdf awk sed
+
+The script will exit and complain if something is missing. Homebrew is your friend.
 
 ## Instructions
 Runs OCR on all PDF files in its directory,
