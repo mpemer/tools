@@ -2,6 +2,9 @@
 Bash script that organizes scanned PDF files,
 into searchable PDF files in datetree folder structure
 
+*Copyright (C) 2023 Marcus Pemer*
+*Licensed under the GNU General Public License, version 3 or later*
+
 ## Files
 pdf_refile.sh
 
