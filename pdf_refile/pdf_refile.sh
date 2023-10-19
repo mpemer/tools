@@ -119,7 +119,7 @@ parse_date() {
     return 1
   fi
 
-  # Extract the date using sed
+  # Extract the date using sed.
   local extracted_date=$(echo "$trimmed_line" | awk '{for(i=1;i<=NF;i++) if($i ~ /^[0-9]{2,4}[\/\.\-][0-9]{2}[\/\.\-][0-9]{2,4}$/) print $i}' FS=" ")
 
   # Split the date into its components
@@ -127,36 +127,28 @@ parse_date() {
   IFS="$delimiter" read -a date_parts <<< "$extracted_date"
 
 
-  # Determine the order of the date components based on the length of the first component
   local year month day
-  if [[ ${#date_parts[0]} -eq 4 ]]; then
-      # YYYY MM DD format
-      year=${date_parts[0]}
-      month=${date_parts[1]}
-      day=${date_parts[2]}
-      
-  elif [[ ${#date_parts[2]} -eq 4 ]]; then
-      # DD MM YYYY format
-      day=${date_parts[0]}
-      month=${date_parts[1]}
-      year=${date_parts[2]}
-      
-  else
-    # MM DD YY or DD MM YY format
-    # Determine if it's a European or American date by checking the delimiter
-    if [[ $delimiter == '/' ]]; then
+  # Determine if it's a European or American date by checking the delimiter
+  if [[ $delimiter == '/' ]]; then
       # American date
       month=${date_parts[0]}
       day=${date_parts[1]}
       year=${date_parts[2]}
-    else
+  else
       # European date
-      day=${date_parts[0]}
-      month=${date_parts[1]}
-      year=${date_parts[2]}
-    fi
+      if [[ ${#date_parts[0]} -eq 4 ]]; then
+          # YYYY MM DD format
+          year=${date_parts[0]}
+          month=${date_parts[1]}
+          day=${date_parts[2]}
+      else
+          # DD MM YYYY format
+          day=${date_parts[0]}
+          month=${date_parts[1]}
+          year=${date_parts[2]}
+      fi
   fi
-
+  
   # Prepend "20" or "19" to the year if it's only two digits
   if [[ ${#year} -eq 2 ]]; then
     if ((10#$year > 50)); then
