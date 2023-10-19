@@ -111,14 +111,16 @@ cleanup() {
 parse_date() {
   local line=$1
 
+  local trimmed_line=$(echo $line | sed -E 's/[[:space:]]*([-./])[[:space:]]*/\1/g')
+  
   # Check if the string contains a date
-  if ! echo "$line" | grep -qE '[0-9]{2,4}[\/\.\-][0-9]{2}[\/\.\-][0-9]{2,4}'; then
+  if ! echo "$trimmed_line" | grep -qE '[0-9]{2,4}[\/\.\-][0-9]{2}[\/\.\-][0-9]{2,4}'; then
     # No date found
     return 1
   fi
 
   # Extract the date using sed
-  local extracted_date=$(echo "$line" | awk '{for(i=1;i<=NF;i++) if($i ~ /^[0-9]{2,4}[\/\.\-][0-9]{2}[\/\.\-][0-9]{2,4}$/) print $i}' FS=" ")
+  local extracted_date=$(echo "$trimmed_line" | awk '{for(i=1;i<=NF;i++) if($i ~ /^[0-9]{2,4}[\/\.\-][0-9]{2}[\/\.\-][0-9]{2,4}$/) print $i}' FS=" ")
 
   # Split the date into its components
   local delimiter=$(echo "$extracted_date" | sed -E 's/[0-9]+(.)[0-9]+.*/\1/')
