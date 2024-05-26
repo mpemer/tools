@@ -133,12 +133,41 @@ parse_date() {
   local year month day
   # Determine if it's a European or American date by checking the delimiter
   if [[ $delimiter == '/' ]]; then
-      # American date
-      month=${date_parts[0]}
-      day=${date_parts[1]}
-      year=${date_parts[2]}
+      # Possibly an American date - try to find out
+      a=${date_parts[0]}
+      b=${date_parts[1]}
+      c=${date_parts[2]}
+
+      if [[ ${#a} -eq 4 ]]; then
+          year=$1
+          month=$b
+          day=$c
+#      elif [[ ${#c} -eq 4 ]]; then
+#          day=$a
+#          month=$b
+#          year=$c
+      else
+          # All three abc are two digits long, try to apply heuristics
+          year=$c # in two digit dates, this is always the case
+          if ((10#$a > 12)); then # we are lucky, the first element is impossibly large to be a month
+              day=$a
+              month=$b
+          elif ((10#$b > 12)); then # we are lucky, the second element is impossibly large to be a month
+              month=$a
+              day=$b
+          else
+              # in this case we cannot determine from the values which one is which,
+              # the most common two-digit date with slashes is american, so assume that:
+              month=$a
+              day=$b
+              # Note that this case could lead to errors, whenever a scan contains
+              # a date in the format xx/yy/zz, is European, and the day is less than 12.
+              # As far as I can tell, we will need to live with this risk.
+          fi
+      fi
+      
   else
-      # European date
+      # Treat as a European date
       if [[ ${#date_parts[0]} -eq 4 ]]; then
           # YYYY MM DD format
           year=${date_parts[0]}
@@ -184,7 +213,7 @@ process_files() {
     # then user will be prompted to validate manually.
     max_days=365
 
-    find . -maxdepth 2 -type f -name "*.pdf" | while IFS= read -r file_path; do
+    find -L . -maxdepth 2 -type f -name "*.pdf" | while IFS= read -r file_path; do
         # Strip './' from the beginning of the file path
         file=${file_path:2}
         filename="${file##*/}"
@@ -200,7 +229,7 @@ process_files() {
         # Run ocrmypdf on the file with specified flags
         ocr_file="$tmp/$filename"
         debug_print "ocr_file=${ocr_file}"
-        ocrmypdf -q --skip-text --output-type pdf "$file" "$ocr_file"
+        ocrmypdf -q --skip-text --output-type pdf --invalidate-digital-signatures "$file" "$ocr_file"
         if [[ $? -ne 0 ]]; then
             error_print "OCR processing failed for $file"
             continue  # Skip to the next file
