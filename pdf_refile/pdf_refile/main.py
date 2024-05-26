@@ -1,3 +1,41 @@
+# pdf_refile.main
+#
+# Script that organizes scanned PDF files,
+# into searchable PDF files in datetree folder structure
+#
+# Copyright (C) 2023-2024 Marcus Pemer
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# Author: Marcus Pemer <marcus@pemer.com>
+#
+# Files: pdf_refile/main.py
+# Dependencies: bash pdftotext ocrmypdf awk sed
+#
+# Instructions:
+# Runs OCR on all PDF files in its directory,
+# (or skips OCR if PDF is already searchable),
+# Then attempts to extrace a contextual date stamp for the PDF file,
+# If file name begins with YYYYMMDD-somename.pdf, then this will be used,
+# If file name matches Scanned_YYYYMMDD-somename.pdf, then this will be used,
+# else, try to read date from file contents,
+# lastly, ask user for date stamp, suggesting file creation date as default.
+# Move searchable PDF into datetree folder ./YYYY/MM/DD/.
+#
+# To use, place script into folder with pdf files to be organized.
+# and run it like so: python <path/to/pdf_refile/main.py>
+#
 import os
 import sys
 import shutil
